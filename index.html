@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html ng-app="redditApp">
+  <head>
+    <meta charset="utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" media="screen" title="no title">
+    <title></title>
+  </head>
+  <body ng-controller="mainCtrl as main"  class="container">
+    <div class="row">
+      <label for="search">Search</label>
+      <input type="text" ng-model="main.search">
+
+      <select ng-model="main.filtering">
+        <option value="title">Title</option>
+        <option value="-date">Date</option>
+        <option value="-likes" selected>Likes</option>
+      </select>
+      <a data-toggle="modal" data-target="#newPost">New Post</a>
+    </div>
+    <div class="row single" ng-repeat="thing in main.things | orderBy:main.filtering | contains:main.search track by $index" ng-controller="singleCtrl as one">
+      <img class="col-md-4 floating" src="{{thing.img}}"/>
+      <div class="col-md-8 floating notImg">
+        <h1>{{thing.title}}</h1>
+        <span ng-class="{ 'negetive' : thing.likes < 0, 'positive': thing.likes > -1 }"><span class="glyphicon glyphicon-arrow-up" ng-click="thing.likes = one.add(thing.likes)"></span><span class="glyphicon glyphicon-arrow-down" ng-click="thing.likes = one.down(thing.likes)"></span>{{thing.likes | abs}}</span>
+        <p>
+          Description: {{thing.description}}
+        </p>
+        <time am-time-ago="thing.date" title="{{ thing.date | amDateFormat: 'dddd, MMMM Do YYYY, h:mm a' }}"></time>
+        <a class="comments" data-toggle="modal" data-target="#myModal" ng-click="one.modal(thing)">
+          <span class="glyphicon glyphicon-comment"></span> {{thing.comments | length}} Comments
+        </a>
+      </div>
+    </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="Modal as modals">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel">{{modals.title}}</h4>
+        </div>
+        <div class="modal-body" ng-repeat="comment in modals.comments track by $index">
+          <p>
+            {{comment}}
+          </p>
+        </div>
+        <div class="modal-footer">
+          <form class="newComment" name="newComment" ng-submit="modals.addCom(newComm)">
+            <label for="newCom" class="">New Comment</label>
+            <input type="text" name="newCom" class="form-control" ng-model="newComm">
+            <button type="submit" class="btn btn-secondary">Add</button>
+          </form>
+
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="newPost" tabindex="-1" role="dialog" aria-labelledby="newPostLabel" aria-hidden="true" ng-controller="Modal as modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="newPostLabel">New Post</h4>
+        </div>
+        <div class="modal-body">
+          <form name="newPostForm" ng-model="modal.newPosting" ng-submit="modal.addPost()">
+            <label for="">Title</label>
+            <input type="text" name="title" ng-model="modal.title" class='form-control'>
+            <label for="">Image</label>
+            <input type="text" name="image" ng-model="modal.image" class='form-control'>
+            <label for="">Description</label>
+            <input type="text" name="description" ng-model="modal.description" class='form-control'>
+            <button type="submit" class="btn close">Add Post</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </body>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.9.0/angular-moment.min.js"></script>
+  <script type="text/javascript" src='main.js'></script>
+</html>
